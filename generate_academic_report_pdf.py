@@ -3,15 +3,16 @@ import sys
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether, HRFlowable
 )
 from reportlab.pdfgen import canvas
 
-class AcademicNumberedCanvas(canvas.Canvas):
+class IEEENumberedCanvas(canvas.Canvas):
     """Two-pass canvas for academic report header, footer, and page count."""
     def __init__(self, *args, **kwargs):
-        super(AcademicNumberedCanvas, self).__init__(*args, **kwargs)
+        super(IEEENumberedCanvas, self).__init__(*args, **kwargs)
         self._saved_page_states = []
 
     def showPage(self):
@@ -23,27 +24,28 @@ class AcademicNumberedCanvas(canvas.Canvas):
         for state in self._saved_page_states:
             self.__dict__.update(state)
             self.draw_page_decorations(num_pages)
-            super(AcademicNumberedCanvas, self).showPage()
-        super(AcademicNumberedCanvas, self).save()
+            super(IEEENumberedCanvas, self).showPage()
+        super(IEEENumberedCanvas, self).save()
 
     def draw_page_decorations(self, page_count):
         self.saveState()
-        self.setFont("Helvetica", 8)
-        self.setFillColor(colors.HexColor("#4B5563"))
+        self.setFont("Times-Roman", 8.5)
+        self.setFillColor(colors.HexColor("#333333"))
         
         # Header on pages > 1
         if self._pageNumber > 1:
             self.drawString(54, 755, "AgroEdge AI: An Edge AI-Based Foliar Pathology & Autonomous Precision Agronomy System")
-            self.setStrokeColor(colors.HexColor("#D1D5DB"))
+            self.drawRightString(558, 755, "LPU CSE 276 Project Report")
+            self.setStrokeColor(colors.HexColor("#999999"))
             self.setLineWidth(0.5)
             self.line(54, 748, 558, 748)
             
         # Footer on all pages
-        self.setStrokeColor(colors.HexColor("#D1D5DB"))
+        self.setStrokeColor(colors.HexColor("#999999"))
         self.setLineWidth(0.5)
         self.line(54, 45, 558, 45)
         
-        self.drawString(54, 32, "Academic Capstone Project Report | CSE AI & ML Foundations")
+        self.drawString(54, 32, "Lovely Professional University | School of Computing and Artificial Intelligence")
         page_text = f"Page {self._pageNumber} of {page_count}"
         self.drawRightString(558, 32, page_text)
         self.restoreState()
@@ -61,213 +63,271 @@ def build_academic_report(filename="AgroEdge_AI_Final_Project_Report.pdf"):
 
     styles = getSampleStyleSheet()
 
-    # Color Palette
-    PRIMARY = colors.HexColor("#1B4D3E")      # Forest Green
-    SECONDARY = colors.HexColor("#15803D")    # Emerald
-    DARK_TEXT = colors.HexColor("#111827")    # Charcoal Body
-    LIGHT_BG = colors.HexColor("#F0FDF4")     # Light mint
-    GRAY_BG = colors.HexColor("#F9FAFB")
-    BORDER_COLOR = colors.HexColor("#E5E7EB")
-
-    # Typography
-    doc_title_style = ParagraphStyle(
-        'AcademicTitle',
+    # Exact IEEE Academic Typography (Times New Roman)
+    title_style = ParagraphStyle(
+        'DocTitle',
         parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=18,
-        leading=22,
-        alignment=1, # Centered
-        textColor=PRIMARY,
-        spaceAfter=8
-    )
-
-    author_style = ParagraphStyle(
-        'AuthorBlock',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=9.5,
-        leading=14,
-        alignment=1,
-        textColor=DARK_TEXT,
+        fontName='Times-Bold',
+        fontSize=20,
+        leading=24,
+        alignment=TA_CENTER,
+        textColor=colors.black,
         spaceAfter=12
     )
 
-    abstract_heading = ParagraphStyle(
-        'AbstractHeading',
+    author_name_style = ParagraphStyle(
+        'AuthorName',
         parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=10,
-        leading=13,
-        textColor=PRIMARY,
-        spaceAfter=4
+        fontName='Times-Roman',
+        fontSize=12,
+        leading=15,
+        alignment=TA_CENTER,
+        textColor=colors.black,
+        spaceAfter=2
     )
 
-    abstract_body = ParagraphStyle(
-        'AbstractBody',
+    reg_style = ParagraphStyle(
+        'RegNo',
         parent=styles['Normal'],
-        fontName='Helvetica-Oblique',
-        fontSize=8.5,
+        fontName='Times-Italic',
+        fontSize=10,
+        leading=13,
+        alignment=TA_CENTER,
+        textColor=colors.black,
+        spaceAfter=2
+    )
+
+    affiliation_style = ParagraphStyle(
+        'Affiliation',
+        parent=styles['Normal'],
+        fontName='Times-Italic',
+        fontSize=9.5,
+        leading=13,
+        alignment=TA_CENTER,
+        textColor=colors.black,
+        spaceAfter=10
+    )
+
+    course_submission_style = ParagraphStyle(
+        'CourseSubmission',
+        parent=styles['Normal'],
+        fontName='Times-Italic',
+        fontSize=9,
         leading=12.5,
-        textColor=DARK_TEXT,
+        alignment=TA_CENTER,
+        textColor=colors.black,
+        spaceAfter=16
+    )
+
+    abstract_style = ParagraphStyle(
+        'AbstractParagraph',
+        parent=styles['Normal'],
+        fontName='Times-Roman',
+        fontSize=9,
+        leading=12.5,
+        alignment=TA_JUSTIFY,
+        textColor=colors.black,
+        leftIndent=14,
+        rightIndent=14,
         spaceAfter=8
     )
 
     keywords_style = ParagraphStyle(
-        'KeywordsStyle',
+        'KeywordsParagraph',
         parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=8.5,
-        leading=12,
-        textColor=DARK_TEXT,
+        fontName='Times-Roman',
+        fontSize=9,
+        leading=12.5,
+        alignment=TA_JUSTIFY,
+        textColor=colors.black,
+        leftIndent=14,
+        rightIndent=14,
         spaceAfter=14
     )
 
     h1_style = ParagraphStyle(
-        'SectionHeading1',
+        'IEEE_H1',
         parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=12,
-        leading=15,
-        textColor=PRIMARY,
+        fontName='Times-Bold',
+        fontSize=11,
+        leading=14,
+        textColor=colors.black,
         spaceBefore=12,
-        spaceAfter=5,
+        spaceAfter=4,
         keepWithNext=True
     )
 
     h2_style = ParagraphStyle(
-        'SectionHeading2',
+        'IEEE_H2',
         parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=10,
+        fontName='Times-BoldItalic',
+        fontSize=9.5,
         leading=13,
-        textColor=SECONDARY,
-        spaceBefore=8,
-        spaceAfter=3,
+        textColor=colors.black,
+        spaceBefore=7,
+        spaceAfter=2,
         keepWithNext=True
     )
 
     body_style = ParagraphStyle(
-        'AcademicBody',
+        'IEEE_Body',
         parent=styles['Normal'],
-        fontName='Helvetica',
+        fontName='Times-Roman',
         fontSize=9,
-        leading=13,
-        textColor=DARK_TEXT,
+        leading=12.5,
+        alignment=TA_JUSTIFY,
+        textColor=colors.black,
         spaceAfter=5
     )
 
     bullet_style = ParagraphStyle(
-        'AcademicBullet',
+        'IEEE_Bullet',
         parent=styles['Normal'],
-        fontName='Helvetica',
+        fontName='Times-Roman',
         fontSize=8.5,
-        leading=12.5,
-        textColor=DARK_TEXT,
-        leftIndent=12,
+        leading=12,
+        alignment=TA_JUSTIFY,
+        textColor=colors.black,
+        leftIndent=15,
         spaceAfter=3
     )
 
     th_style = ParagraphStyle(
-        'TableHeader',
+        'TH_Style',
         parent=styles['Normal'],
-        fontName='Helvetica-Bold',
+        fontName='Times-Bold',
         fontSize=8,
         leading=10,
-        textColor=colors.white
+        alignment=TA_CENTER,
+        textColor=colors.black
     )
 
     td_style = ParagraphStyle(
-        'TableCell',
+        'TD_Style',
         parent=styles['Normal'],
-        fontName='Helvetica',
+        fontName='Times-Roman',
         fontSize=8,
         leading=10.5,
-        textColor=DARK_TEXT
+        textColor=colors.black
+    )
+
+    td_center = ParagraphStyle(
+        'TD_Center',
+        parent=styles['Normal'],
+        fontName='Times-Roman',
+        fontSize=8,
+        leading=10.5,
+        alignment=TA_CENTER,
+        textColor=colors.black
     )
 
     td_bold = ParagraphStyle(
-        'TableCellBold',
+        'TD_Bold',
         parent=styles['Normal'],
-        fontName='Helvetica-Bold',
+        fontName='Times-Bold',
         fontSize=8,
         leading=10.5,
-        textColor=DARK_TEXT
+        textColor=colors.black
+    )
+
+    table_caption = ParagraphStyle(
+        'TableCaption',
+        parent=styles['Normal'],
+        fontName='Times-Roman',
+        fontSize=8.5,
+        leading=11,
+        alignment=TA_CENTER,
+        spaceBefore=6,
+        spaceAfter=3
     )
 
     story = []
 
-    # Title & Authorship
-    story.append(Paragraph("AgroEdge AI: An Edge AI-Based Foliar Pathology and Autonomous Precision Agronomy Monitoring System", doc_title_style))
+    # -------------------------------------------------------------
+    # EXACT IEEE HEADER BLOCK AS PER USER'S SCREENSHOT
+    # -------------------------------------------------------------
     story.append(Paragraph(
-        "<b>Rishu</b><br/>"
-        "Department of Computer Science & Engineering, School of Computing and Artificial Intelligence<br/>"
-        "Course: Artificial Intelligence & Machine Learning Project Foundations<br/>"
-        "Project Repository: <u>https://github.com/rishu295/AgroEdge-AI</u> | Live Deployment: <u>https://agroedgeai.streamlit.app</u>",
-        author_style
+        "AgroEdge AI: An Edge AI-Based Foliar Pathology and<br/>Autonomous Precision Agronomy Monitoring System",
+        title_style
     ))
-    story.append(HRFlowable(width="100%", thickness=1, color=PRIMARY, spaceBefore=2, spaceAfter=8))
+    story.append(Paragraph("Rishu", author_name_style))
+    story.append(Paragraph("Reg. No. 12519632", reg_style))
+    story.append(Paragraph(
+        "B.Tech CSE (AI & ML), School of Computing and Artificial Intelligence<br/>"
+        "Lovely Professional University<br/>"
+        "Phagwara, Punjab, India",
+        affiliation_style
+    ))
+    story.append(Paragraph(
+        "CSE 276: AI Foundations Project (Roll No. K4P25REB10). Submitted to Mr. Jimmy Singla, Department of Computer Science and Engineering.",
+        course_submission_style
+    ))
 
     # Abstract
-    story.append(Paragraph("<b>Abstract</b>", abstract_heading))
     abstract_text = (
-        "—AgroEdge AI is a decentralized, edge-native artificial intelligence platform engineered for real-time plant leaf "
-        "disease identification, agronomic remediation, and closed-loop soil irrigation automation in resource-constrained agricultural environments. "
-        "Standard cloud-dependent smart farming architectures suffer from severe latency, prohibitive cellular bandwidth expenses, and total failure under "
-        "intermittent rural connectivity. AgroEdge AI mitigates this paradigm by porting neural inference directly to edge compute runtimes. "
-        "A MobileNet deep convolutional neural network was fine-tuned on the 38-class PlantVillage benchmark dataset (54,303 leaf images) and compressed "
-        "via Post-Training Quantization (INT8) into an Open Neural Network Exchange (ONNX) graph. Across experimental benchmarks, the INT8 quantized model "
-        "reduced storage footprint by 75% (from 14.0 MB to 2.56 MB) and accelerated CPU inference latency to 18 ms while preserving a 96.4% top-1 diagnostic accuracy. "
-        "The system pairs vision inference with a deterministic agronomic advisory engine providing dual-pathway (organic and chemical) remediation prescriptions, "
-        "accompanied by an automated closed-loop soil moisture threshold actuator regulating solenoid irrigation valves. The application is built using Streamlit "
-        "and Python, containerized with automated CI/CD via GitHub Actions, and deployed live on Streamlit Community Cloud. AgroEdge AI delivers a comprehensive "
-        "end-to-end framework demonstrating dataset curation, transfer learning, quantization, edge acceleration, autonomous actuation, and production deployment."
+        "<b><i>Abstract</i>—AgroEdge AI is an edge-native artificial intelligence web application that diagnoses foliar crop diseases "
+        "and automates closed-loop precision irrigation using on-device neural inference and real-time environmental telemetry. "
+        "Standard cloud-dependent smart agriculture architectures suffer from high latency, recurring cellular bandwidth expenses, "
+        "and complete system failure under erratic rural connectivity. AgroEdge AI eliminates cloud dependency during inference by "
+        "deploying a lightweight MobileNet architecture fine-tuned on the 38-class PlantVillage benchmark dataset (54,303 leaf images). "
+        "Four convolutional architectures were evaluated, and the INT8 Post-Training Quantized MobileNet model achieved the lowest recorded "
+        "memory footprint of 2.56 MB (a 75% reduction from 14.0 MB) while accelerating CPU inference latency to 18 ms. The model attained "
+        "a recorded top-1 diagnostic accuracy of 96.4%. To deliver actionable utility, a deterministic agronomic remediation engine prescribes "
+        "dual-pathway (bio-organic and chemical) treatments with dosage metrics, while an autonomous closed-loop threshold module actuates "
+        "solenoid irrigation valves based on volumetric soil moisture levels (<30%). The application is implemented using Python, ONNX Runtime, "
+        "and Streamlit, and is deployed live on Streamlit Community Cloud. AgroEdge AI demonstrates an end-to-end engineering workflow "
+        "involving dataset preprocessing, transfer learning, quantization, edge acceleration, autonomous actuation, and production deployment. "
+        "Predictions are automated decision-support estimates and should be accompanied by standard agronomic scouting.</b>"
     )
-    story.append(Paragraph(abstract_text, abstract_body))
+    story.append(Paragraph(abstract_text, abstract_style))
 
-    keywords_text = "<b>Keywords</b>—Edge AI, Plant Pathology, MobileNet, Post-Training Quantization (INT8), ONNX Runtime, Closed-Loop Irrigation, Precision Agriculture, Streamlit."
+    keywords_text = (
+        "<b><i>Keywords</i>—Plant disease detection, Edge AI, MobileNet, Post-Training Quantization, ONNX Runtime, "
+        "Closed-Loop Irrigation, Streamlit, Precision Agriculture.</b>"
+    )
     story.append(Paragraph(keywords_text, keywords_style))
-    story.append(HRFlowable(width="100%", thickness=0.5, color=BORDER_COLOR, spaceBefore=2, spaceAfter=8))
+    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#444444"), spaceBefore=2, spaceAfter=8))
 
     # SECTION I: INTRODUCTION
     story.append(Paragraph("I. Introduction", h1_style))
-    story.append(Paragraph("<b>A. Background</b>", h2_style))
+    story.append(Paragraph("A. Background", h2_style))
     story.append(Paragraph(
-        "Foliar crop diseases represent one of the leading drivers of catastrophic agricultural yield loss globally, causing between "
-        "20% and 40% of annual food crop reduction according to the United Nations Food and Agriculture Organization (FAO). Early and accurate "
-        "pathological diagnosis is vital to contain localized outbreaks before irreversible crop necrosis occurs. Recent advancements in deep learning "
-        "have enabled automated visual recognition of plant diseases with high accuracy. However, existing commercial platforms universally rely on "
-        "centralized cloud backends: a field camera uploads high-resolution images across cellular data links to distant server farms, where heavy "
-        "neural networks execute inference before returning predictions back to the farm.",
+        "Agricultural crop yield is vulnerable to severe destruction caused by foliar fungal, bacterial, and viral pathogens. "
+        "According to the Food and Agriculture Organization (FAO), plant diseases cost the global economy over $220 billion annually, "
+        "causing between 20% and 40% of agricultural production loss. Traditional manual scouting by agronomists is labor-intensive, "
+        "infrequent, and subjective, often leading to delayed treatment and extensive crop necrosis. While recent advances in deep learning "
+        "have enabled automated image classification of plant diseases, the vast majority of existing solutions rely exclusively on centralized "
+        "cloud computing servers.",
         body_style
     ))
     story.append(Paragraph(
-        "In practical agricultural environments, this cloud-centric architecture encounters insurmountable bottlenecks. Rural farmlands, greenhouses, "
-        "and orchards routinely suffer from non-existent or unstable 2G/3G connectivity. Furthermore, real-time autonomous systems—such as robotic sprayers "
-        "or drone-mounted cameras—cannot tolerate multi-second latency round-trips. AgroEdge AI addresses this challenge by shifting computational "
-        "intelligence directly to the edge, running quantized deep neural networks locally on microcomputers, mobile chips, or client browsers with zero cloud dependency.",
-        body_style
-    ))
-
-    story.append(Paragraph("<b>B. Project Overview</b>", h2_style))
-    story.append(Paragraph(
-        "AgroEdge AI is a full-stack, edge-enabled precision farming and foliar pathology platform. It accepts foliar leaf photography via local file uploads, "
-        "dataset inspection libraries, or real-time camera video streams, preprocessing the imagery to a 224x224 RGB tensor. A quantized INT8 MobileNet ONNX "
-        "runtime engine classifies the image across 38 distinct crop disease categories in under 20 milliseconds. The system simultaneously operates an agronomic "
-        "remediation database generating organic and chemical treatment prescriptions, an automated soil moisture actuation engine controlling solenoid irrigation "
-        "valves, and an IoT sensor telemetry buffer.",
+        "In practical agricultural environments, this cloud-dependent model encounters critical barriers: rural farmlands, greenhouses, and "
+        "orchards routinely suffer from absent or unreliable internet connectivity. Furthermore, autonomous field systems—such as robotic sprayers "
+        "and aerial drones—require millisecond-level decision making that cannot tolerate round-trip network delays. AgroEdge AI resolves these "
+        "bottlenecks by shifting deep learning inference directly to the edge, executing quantized models locally on CPU runtimes with zero cloud dependence.",
         body_style
     ))
 
-    story.append(Paragraph("<b>C. Problem Statement</b>", h2_style))
+    story.append(Paragraph("B. Project Overview", h2_style))
     story.append(Paragraph(
-        "Smallholder farmers and commercial growers lack accessible, rapid, and offline-capable diagnostic tools to identify foliar pathologies before they spread. "
+        "AgroEdge AI is a full-stack, edge-enabled precision farming and foliar pathology platform. It accepts foliar leaf photography via local file "
+        "uploads, preset sample libraries, or real-time camera video streams, preprocessing the imagery into a standardized 224x224 RGB tensor. An INT8 "
+        "quantized MobileNet model running on ONNX Runtime classifies the image across 38 distinct crop disease categories in 18 ms. The system "
+        "simultaneously executes an agronomic remediation database providing organic and chemical prescriptions, a closed-loop soil moisture actuation "
+        "engine controlling virtual solenoid valves, and an IoT sensor telemetry buffer.",
+        body_style
+    ))
+
+    story.append(Paragraph("C. Problem Statement", h2_style))
+    story.append(Paragraph(
+        "Smallholder farmers and precision growers lack accessible, rapid, and offline-capable diagnostic tools to identify foliar pathologies before they spread. "
         "Existing smart farming solutions enforce continuous broadband internet connectivity, incur expensive data fees, and introduce unacceptable latency. "
         "There is an acute need for an edge-native, lightweight AI platform that performs sub-30ms offline foliar diagnosis, prescribes immediate scientific "
         "remedies, and automates soil hydration without requiring cloud infrastructure.",
         body_style
     ))
 
-    story.append(Paragraph("<b>D. Objectives</b>", h2_style))
+    story.append(Paragraph("D. Objectives", h2_style))
     objs = [
         "To develop an edge-native foliar pathology classifier operating locally on CPU/ARM hardware with zero cloud dependency.",
         "To evaluate transfer learning across deep convolutional architectures and apply INT8 Post-Training Quantization (PTQ) to minimize parameter memory footprint below 3.0 MB.",
@@ -282,24 +342,25 @@ def build_academic_report(filename="AgroEdge_AI_Final_Project_Report.pdf"):
     # SECTION II: NEED AND SOCIETAL IMPACT
     story.append(Spacer(1, 4))
     story.append(Paragraph("II. Need and Societal Impact", h1_style))
-    story.append(Paragraph("<b>A. Need for the Project</b>", h2_style))
+    story.append(Paragraph("A. Need for the Project", h2_style))
     story.append(Paragraph(
-        "Timely identification of plant diseases directly dictates agricultural profitability and food security. When rural smallholders detect foliar spotting, "
-        "they often resort to excessive broad-spectrum chemical fungicides due to uncertainty, poisoning soil microbiomes and incurring unnecessary costs. "
-        "AgroEdge AI provides instant, scientific identification on-device, recommending exact targeted compounds and biological controls.",
+        "A practical agricultural AI platform must deliver more than raw statistical classifications. Farmers and agronomists need immediate, "
+        "verifiable treatment protocols to arrest disease progression and protect seasonal investments. AgroEdge AI merges edge vision classification, "
+        "evidence-based chemical/biological prescriptions, and automated irrigation management into an intuitive, responsive interface.",
         body_style
     ))
-    story.append(Paragraph("<b>B. Societal Impact</b>", h2_style))
+    story.append(Paragraph("B. Societal Impact", h2_style))
     story.append(Paragraph(
-        "By eliminating reliance on costly cellular internet and centralized cloud APIs, AgroEdge AI democratizes access to precision agronomy for impoverished "
-        "rural farming communities. Automated precision irrigation conserves up to 40% of agricultural fresh water by preventing over-saturation and root rot.",
+        "By eliminating reliance on high-speed cellular infrastructure, AgroEdge AI democratizes access to state-of-the-art agronomy for smallholders "
+        "in developing regions. Precision chemical dosage guidance prevents excessive pesticide runoff into local water tables, and closed-loop soil "
+        "irrigation saves up to 40% of agricultural fresh water.",
         body_style
     ))
-    story.append(Paragraph("<b>C. Alignment with Sustainable Development Goals (SDGs)</b>", h2_style))
+    story.append(Paragraph("C. Alignment with Sustainable Development Goals", h2_style))
     sdgs = [
-        "<b>SDG 2: Zero Hunger:</b> Mitigating crop yield losses through early pest and disease intervention protects regional food supplies.",
-        "<b>SDG 6: Clean Water and Sanitation:</b> Closed-loop soil moisture thresholding eliminates agricultural water wastage and prevents fertilizer leaching into groundwater.",
-        "<b>SDG 12: Responsible Consumption and Production:</b> Targeted chemical dosage guidance curbs overuse of toxic synthetic pesticides."
+        "<b>SDG 2: Zero Hunger:</b> Mitigating crop losses through early foliar disease intervention safeguards food supply chains.",
+        "<b>SDG 6: Clean Water and Sanitation:</b> Closed-loop soil moisture actuation eliminates excessive irrigation and prevents chemical fertilizer leaching.",
+        "<b>SDG 12: Responsible Consumption and Production:</b> Precise fungicide recommendations reduce over-application of synthetic pesticides."
     ]
     for s in sdgs:
         story.append(Paragraph(f"• {s}", bullet_style))
@@ -307,220 +368,239 @@ def build_academic_report(filename="AgroEdge_AI_Final_Project_Report.pdf"):
     # SECTION III: DATASET DESCRIPTION
     story.append(Spacer(1, 4))
     story.append(Paragraph("III. Dataset Description", h1_style))
-    story.append(Paragraph("<b>A. Sources of Data</b>", h2_style))
+    story.append(Paragraph("A. Sources of Data", h2_style))
     story.append(Paragraph(
-        "The computer vision model was trained and validated on the internationally recognized <b>PlantVillage</b> benchmark dataset (Mohanty et al.), "
-        "supplemented by agronomic soil telemetry parameters (Crop and Fertilizer Recommendation records).",
+        "The computer vision model was trained and evaluated on the internationally recognized <b>PlantVillage</b> benchmark dataset (Mohanty et al.), "
+        "coupled with agronomic soil telemetry parameters (Crop and Fertilizer Recommendation records).",
         body_style
     ))
 
     # Table I
+    story.append(Paragraph("TABLE I<br/>Data Sources", table_caption))
     t1_data = [
-        [Paragraph("No.", th_style), Paragraph("Dataset / Asset Name", th_style), Paragraph("Format & Scale", th_style), Paragraph("Project Role", th_style)],
-        [Paragraph("1", td_bold), Paragraph("PlantVillage Vision Dataset", td_style), Paragraph("54,303 Images (38 Classes)", td_style), Paragraph("Foliar disease classification training & validation", td_style)],
-        [Paragraph("2", td_bold), Paragraph("Crop & Soil Telemetry Data", td_style), Paragraph("Tabular (NPK, Moisture, Temp, pH)", td_style), Paragraph("Irrigation threshold and soil health modeling", td_style)],
-        [Paragraph("3", td_bold), Paragraph("Agronomic Pathology Database", td_style), Paragraph("38 Curated Scientific Profiles", td_style), Paragraph("Organic remedies, fungicides, and prevention protocols", td_style)],
-        [Paragraph("4", td_bold), Paragraph("Quantized ONNX Model", td_style), Paragraph("2.56 MB Binary (.onnx)", td_style), Paragraph("Local on-device inference execution engine", td_style)]
+        [Paragraph("No.", th_style), Paragraph("Dataset / Asset Name", th_style), Paragraph("Format & Scale", th_style), Paragraph("Purpose", th_style)],
+        [Paragraph("1", td_center), Paragraph("PlantVillage Vision Dataset", td_style), Paragraph("54,303 Images (38 Classes)", td_style), Paragraph("Historical foliar records for model development", td_style)],
+        [Paragraph("2", td_center), Paragraph("Crop & Soil Telemetry Dataset", td_style), Paragraph("Tabular (NPK, Moisture, Temp, pH)", td_style), Paragraph("Irrigation threshold and soil health modeling", td_style)],
+        [Paragraph("3", td_center), Paragraph("Agronomic Pathology Database", td_style), Paragraph("38 Curated Scientific Profiles", td_style), Paragraph("Organic remedies, fungicides, and prevention guidelines", td_style)],
+        [Paragraph("4", td_center), Paragraph("Quantized ONNX Model", td_style), Paragraph("2.56 MB Binary (.onnx)", td_style), Paragraph("Consistent edge execution of new input records", td_style)]
     ]
     t1 = Table(t1_data, colWidths=[24, 150, 140, 190])
     t1.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), PRIMARY),
-        ('BOX', (0,0), (-1,-1), 0.5, PRIMARY),
-        ('INNERGRID', (0,0), (-1,-1), 0.5, BORDER_COLOR),
-        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, GRAY_BG]),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-        ('LEFTPADDING', (0,0), (-1,-1), 5),
-        ('RIGHTPADDING', (0,0), (-1,-1), 5),
+        ('BOX', (0,0), (-1,-1), 0.5, colors.black),
+        ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#BBBBBB")),
+        ('LINEBELOW', (0,0), (-1,0), 1, colors.black),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
     ]))
     story.append(t1)
 
     story.append(Spacer(1, 4))
-    story.append(Paragraph("<b>B. Dataset Size and Classes</b>", h2_style))
+    story.append(Paragraph("B. Dataset Size and Features", h2_style))
     story.append(Paragraph(
-        "The computer vision dataset comprises 54,303 annotated leaf images spanning 14 agricultural crops: Apple, Blueberry, Cherry, Corn (Maize), Grape, "
+        "The computer vision dataset comprises 54,303 annotated leaf images across 14 agricultural crops: Apple, Blueberry, Cherry, Corn (Maize), Grape, "
         "Orange, Peach, Bell Pepper, Potato, Raspberry, Soybean, Squash, Strawberry, and Tomato. The dataset covers 26 disease categories (bacterial spots, "
         "early/late blights, rusts, powdery mildews, leaf scabs, viral curls) and 12 healthy foliar classes, forming a comprehensive 38-class taxonomic challenge.",
         body_style
     ))
 
-    # Page Break for clean formatting
+    # Page Break
     story.append(PageBreak())
 
-    # SECTION IV: DATASET PREPROCESSING & MODEL OPTIMIZATION
+    # SECTION IV: DATASET PREPROCESSING
     story.append(Paragraph("IV. Dataset Preprocessing & Edge Optimization", h1_style))
     story.append(Paragraph(
-        "To ensure real-time execution on low-power edge nodes, an end-to-end preprocessing and quantization pipeline was engineered:",
+        "Preprocessing prepares submitted leaf imagery and environmental parameters into the exact numerical format expected by the model. "
+        "The project encapsulates these transformations into modular Python pipelines loaded during application startup.",
         body_style
     ))
-    prep_steps = [
-        "<b>Color Space & Geometric Resizing:</b> Incoming images are parsed via Pillow, coerced to 3-channel RGB, and resized via bilinear interpolation to 224x224 pixels.",
-        "<b>Tensor Normalization:</b> Floating-point pixel intensities [0, 255] are rescaled to [0.0, 1.0] and standardized against ImageNet distribution parameters (mean = [0.485, 0.456, 0.406], std = [0.229, 0.224, 0.225]).",
-        "<b>Tensor Dimension Transposition:</b> The memory layout is permuted from standard row-major HWC (Height, Width, Channels) to channel-first NCHW (1, 3, 224, 224) as required by optimized ONNX linear algebra kernels.",
-        "<b>Post-Training Quantization (PTQ - INT8):</b> The baseline 32-bit floating-point (FP32) MobileNet weights are quantized into signed 8-bit integers (INT8) using symmetric linear calibration. This reduces parameter storage by 75% without requiring full retraining.",
-        "<b>Graph Optimization:</b> Redundant dropout and batch-normalization operations are folded into preceding convolutional weights, minimizing runtime operator count."
+    prep_items = [
+        "<b>Geometric Standardization:</b> All images are coerced to 3-channel RGB and resized to 224x224 pixels using bilinear interpolation.",
+        "<b>Channel Normalization:</b> Raw 8-bit integer pixel intensities [0, 255] are rescaled to [0.0, 1.0] and standardized against ImageNet mean ([0.485, 0.456, 0.406]) and standard deviation ([0.229, 0.224, 0.225]).",
+        "<b>Tensor Layout Permutation:</b> The tensor memory layout is converted from standard (H, W, C) to channel-first (1, 3, 224, 224) format for optimal memory alignment in ONNX Runtime linear algebra kernels.",
+        "<b>Post-Training Quantization (INT8):</b> 32-bit floating-point weights (FP32) are transformed into 8-bit signed integers (INT8) using symmetric uniform quantization. This reduces the binary footprint from 14.0 MB to 2.56 MB (a 75% compression ratio) with negligible accuracy degradation (<0.8%)."
     ]
-    for p in prep_steps:
+    for p in prep_items:
         story.append(Paragraph(f"• {p}", bullet_style))
 
     # SECTION V: MODELS AND TECHNOLOGIES USED
     story.append(Spacer(1, 4))
     story.append(Paragraph("V. Models and Technologies Used", h1_style))
     story.append(Paragraph(
-        "Four candidate deep learning architectures were evaluated for agricultural edge feasibility. Heavy enterprise models (ResNet-50, VGG-16) "
-        "were compared against lightweight edge backbones (MobileNetV2 FP32 and MobileNetV2 INT8 Quantized).",
+        "The project evaluated four supervised deep learning architectures: VGG-16, ResNet-50, MobileNetV2 (FP32), and MobileNetV2 (INT8 Quantized). "
+        "VGG-16 establishes an architectural baseline, ResNet-50 demonstrates residual learning, MobileNetV2 introduces depthwise separable convolutions, "
+        "and MobileNetV2 INT8 applies 8-bit integer quantization.",
         body_style
     ))
 
-    # Table II: Model Comparison
+    # Table II
+    story.append(Paragraph("TABLE II<br/>Model Benchmark Comparison", table_caption))
     t2_data = [
         [Paragraph("Model Architecture", th_style), Paragraph("Precision", th_style), Paragraph("File Size", th_style), Paragraph("CPU Latency", th_style), Paragraph("Top-1 Accuracy", th_style)],
-        [Paragraph("VGG-16 (Baseline)", td_bold), Paragraph("FP32", td_style), Paragraph("138.4 MB", td_style), Paragraph("284 ms", td_style), Paragraph("96.8%", td_style)],
-        [Paragraph("ResNet-50", td_bold), Paragraph("FP32", td_style), Paragraph("97.5 MB", td_style), Paragraph("142 ms", td_style), Paragraph("97.4%", td_style)],
-        [Paragraph("MobileNetV2 (Standard)", td_bold), Paragraph("FP32", td_style), Paragraph("14.0 MB", td_style), Paragraph("65 ms", td_style), Paragraph("97.1%", td_style)],
-        [Paragraph("AgroEdge AI MobileNet (Ours)", td_bold), Paragraph("INT8 Quantized", td_style), Paragraph("2.56 MB (-75%)", td_bold), Paragraph("18 ms (3.6x faster)", td_bold), Paragraph("96.4% (-0.7%)", td_bold)]
+        [Paragraph("VGG-16 (Baseline)", td_bold), Paragraph("FP32", td_center), Paragraph("138.4 MB", td_center), Paragraph("284 ms", td_center), Paragraph("96.8%", td_center)],
+        [Paragraph("ResNet-50", td_bold), Paragraph("FP32", td_center), Paragraph("97.5 MB", td_center), Paragraph("142 ms", td_center), Paragraph("97.4%", td_center)],
+        [Paragraph("MobileNetV2 (Standard)", td_bold), Paragraph("FP32", td_center), Paragraph("14.0 MB", td_center), Paragraph("65 ms", td_center), Paragraph("97.1%", td_center)],
+        [Paragraph("AgroEdge AI MobileNet (Ours)", td_bold), Paragraph("INT8 Quantized", td_center), Paragraph("2.56 MB (-75%)", td_center), Paragraph("18 ms (3.6x faster)", td_center), Paragraph("96.4% (-0.7%)", td_center)]
     ]
     t2 = Table(t2_data, colWidths=[140, 80, 85, 110, 89])
     t2.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), PRIMARY),
-        ('BOX', (0,0), (-1,-1), 0.5, PRIMARY),
-        ('INNERGRID', (0,0), (-1,-1), 0.5, BORDER_COLOR),
-        ('BACKGROUND', (0,1), (-1,3), colors.white),
-        ('BACKGROUND', (0,4), (-1,4), LIGHT_BG),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-        ('LEFTPADDING', (0,0), (-1,-1), 5),
-        ('RIGHTPADDING', (0,0), (-1,-1), 5),
+        ('BOX', (0,0), (-1,-1), 0.5, colors.black),
+        ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#BBBBBB")),
+        ('LINEBELOW', (0,0), (-1,0), 1, colors.black),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
     ]))
     story.append(t2)
 
     story.append(Spacer(1, 4))
-    story.append(Paragraph("<b>A. Selected Architecture Justification</b>", h2_style))
+    story.append(Paragraph("A. Selected Deep Learning Model", h2_style))
     story.append(Paragraph(
-        "MobileNetV2 with INT8 Post-Training Quantization was selected as the optimal production model. While ResNet-50 attained a marginally higher accuracy "
-        "(97.4% vs 96.4%), its 97.5 MB weight footprint and 142 ms CPU latency render it unsuitable for battery-powered agricultural edge devices. "
-        "AgroEdge AI achieves a 3.6x speedup (18 ms) and a 75% memory reduction to 2.56 MB, fitting seamlessly inside embedded SRAM and flash storage.",
+        "MobileNetV2 INT8 Quantized was selected because it achieved the lowest recorded latency (18 ms) and smallest binary footprint (2.56 MB) "
+        "while maintaining an exceptional 96.4% top-1 accuracy. While ResNet-50 achieved a marginally higher accuracy of 97.4%, its 97.5 MB footprint "
+        "and 142 ms latency make it unviable for energy-constrained edge deployment. The selection is based primarily on edge efficiency and speed.",
         body_style
     ))
 
-    story.append(Paragraph("<b>B. Technologies Used</b>", h2_style))
-    # Table III: Tech Stack
+    story.append(Paragraph("B. Technologies Used", h2_style))
+    # Table III
+    story.append(Paragraph("TABLE III<br/>Technologies Used", table_caption))
     t3_data = [
-        [Paragraph("Component", th_style), Paragraph("Technology / Library", th_style), Paragraph("Architectural Role", th_style)],
-        [Paragraph("Edge AI Runtime", td_bold), Paragraph("ONNX Runtime v1.31 (C++/Python)", td_style), Paragraph("Ultra-low-latency CPU inference execution provider", td_style)],
-        [Paragraph("Image Preprocessing", td_bold), Paragraph("Pillow (PIL), NumPy", td_style), Paragraph("Image resizing, normalization, and NCHW memory layout", td_style)],
-        [Paragraph("Web Application", td_bold), Paragraph("Streamlit v1.56", td_style), Paragraph("Responsive enterprise AgTech web portal and live camera scanner", td_style)],
-        [Paragraph("Data Analytics", td_bold), Paragraph("Pandas, Altair", td_style), Paragraph("24-hour diurnal soil moisture decay and telemetry visualization", td_style)],
-        [Paragraph("Version Control & CI", td_bold), Paragraph("Git, GitHub Actions", td_style), Paragraph("Automated syntax linting and model smoke testing on every push", td_style)],
-        [Paragraph("Public Cloud Hosting", td_bold), Paragraph("Streamlit Community Cloud", td_style), Paragraph("Zero-downtime global HTTPS hosting directly linked to GitHub", td_style)]
+        [Paragraph("Component", th_style), Paragraph("Technology / Library", th_style), Paragraph("Purpose", th_style)],
+        [Paragraph("Programming", td_bold), Paragraph("Python 3.11+", td_style), Paragraph("Core application and machine learning logic", td_style)],
+        [Paragraph("Edge AI Runtime", td_bold), Paragraph("ONNX Runtime v1.31", td_style), Paragraph("High-performance quantized INT8 model inference", td_style)],
+        [Paragraph("Image Processing", td_bold), Paragraph("Pillow (PIL), NumPy", td_style), Paragraph("Image decoding, resizing, and array transformation", td_style)],
+        [Paragraph("Web Application", td_bold), Paragraph("Streamlit v1.56", td_style), Paragraph("Interactive user interface and live camera capture", td_style)],
+        [Paragraph("Data Analytics", td_bold), Paragraph("Pandas, Altair", td_style), Paragraph("Diurnal telemetry graphs and event logging", td_style)],
+        [Paragraph("Version Control & CI", td_bold), Paragraph("Git, GitHub Actions", td_style), Paragraph("Automated testing and continuous integration", td_style)],
+        [Paragraph("Deployment", td_bold), Paragraph("Streamlit Community Cloud", td_style), Paragraph("Hosting the live public web application", td_style)]
     ]
     t3 = Table(t3_data, colWidths=[110, 140, 254])
     t3.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), PRIMARY),
-        ('BOX', (0,0), (-1,-1), 0.5, PRIMARY),
-        ('INNERGRID', (0,0), (-1,-1), 0.5, BORDER_COLOR),
-        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, GRAY_BG]),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-        ('LEFTPADDING', (0,0), (-1,-1), 5),
-        ('RIGHTPADDING', (0,0), (-1,-1), 5),
+        ('BOX', (0,0), (-1,-1), 0.5, colors.black),
+        ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#BBBBBB")),
+        ('LINEBELOW', (0,0), (-1,0), 1, colors.black),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
     ]))
     story.append(t3)
 
     # SECTION VI: PROPOSED METHODOLOGY AND SYSTEM ARCHITECTURE
     story.append(Spacer(1, 4))
     story.append(Paragraph("VI. Proposed Methodology and System Architecture", h1_style))
-    story.append(Paragraph("<b>A. Proposed Methodology</b>", h2_style))
+    story.append(Paragraph("A. Proposed Methodology", h2_style))
     story.append(Paragraph(
-        "The project follows a modular, decoupled edge-to-cloud architecture. Leaf samples captured in the field are preprocessed into normalized tensors. "
-        "The quantized ONNX model executes local inference, computing raw logits that pass through a numerically stable Softmax activation to derive "
-        "class probabilities. The top diagnostic match triggers an agronomic lookup returning organic bio-fungicides and synthetic treatments. "
-        "In parallel, environmental soil telemetry is continuously evaluated against agronomic thresholds to govern irrigation valve states.",
+        "The system follows an edge-native supervised classification workflow. Historical plant leaf records are used to fine-tune the backbone architecture. "
+        "The trained model is converted to ONNX and quantized into INT8 precision. During deployment, submitted leaf images are preprocessed and classified "
+        "by the local ONNX engine. Class probabilities are mapped to specific agronomic treatments, while a separate rule-based threshold component regulates "
+        "irrigation valve states based on sensor telemetry.",
         body_style
     ))
 
-    story.append(Paragraph("<b>B. System Architecture Flow</b>", h2_style))
+    story.append(Paragraph("B. System Architecture", h2_style))
     story.append(Paragraph(
-        "[Field Leaf / Sensor] ──> [Pre-processing (224x224x3 NCHW)] ──> [ONNX INT8 Edge Engine (18ms)] ──> "
-        "[Top-1 Diagnosis & Confidence] ──> [Agronomic Prescription Engine] + [Closed-Loop Solenoid Actuator] ──> [Web Portal & Cloud Gateway]",
+        "The architecture consists of a client interface, preprocessing module, quantized ONNX inference engine, agronomic prescription repository, "
+        "and closed-loop irrigation controller. The frontend collects imagery and sensor readings. The inference engine computes local predictions, "
+        "and results are presented through the interactive dashboard.",
         body_style
     ))
 
-    story.append(Paragraph("<b>C. Working of the System</b>", h2_style))
-    steps = [
-        "<b>1. Image Acquisition:</b> The farmer captures a leaf photo via web camera, smartphone browser, or selects an inspection preset.",
-        "<b>2. Preprocessing:</b> The image is converted to RGB, bilinearly resized to 224x224, and normalized with ImageNet statistics.",
-        "<b>3. Local Inference:</b> ONNX Runtime's CPUExecutionProvider computes feed-forward inference on the INT8 quantized graph in ~18 ms.",
-        "<b>4. Softmax Probability Mapping:</b> Numerically stable Softmax extracts the top predicted class and confidence percentage.",
-        "<b>5. Agronomic Prescription:</b> The pathology database outputs pathogen type, organic bio-treatments, chemical fungicides, and PHI guidelines.",
-        "<b>6. Closed-Loop Irrigation:</b> Volumetric soil moisture (<30%) automatically triggers a virtual solenoid valve until field capacity reaches 50-60%.",
-        "<b>7. Cloud Synchronization:</b> Telemetry and alert logs are buffered locally in SQLite/JSON and pushed to cloud dashboards when connectivity is detected."
+    story.append(Paragraph("C. Working of the System", h2_style))
+    w_steps = [
+        "The user captures a crop leaf photo via live camera or uploads an image file.",
+        "Streamlit passes the image to the local preprocessor, which resizes and normalizes the tensor to (1, 3, 224, 224).",
+        "The quantized ONNX MobileNet engine executes feed-forward inference on the CPU in 18 ms.",
+        "Numerically stable Softmax extracts class probabilities, identifying the disease category and confidence percentage.",
+        "The prescription engine retrieves tailored organic and chemical interventions with dosage safety guidelines.",
+        "The irrigation advisory module evaluates soil moisture levels (<30%) and actuates virtual solenoid valves automatically.",
+        "The results dashboard renders diagnostic assessments, confidence progress bars, treatment plans, and telemetry curves."
     ]
-    for s in steps:
-        story.append(Paragraph(s, bullet_style))
+    for idx, ws in enumerate(w_steps, 1):
+        story.append(Paragraph(f"{idx}. {ws}", bullet_style))
 
     # Page Break
     story.append(PageBreak())
 
     # SECTION VII: IMPLEMENTATION
-    story.append(Paragraph("VII. Implementation Details", h1_style))
-    story.append(Paragraph("<b>A. Application Architecture</b>", h2_style))
+    story.append(Paragraph("VII. Implementation", h1_style))
+    story.append(Paragraph("A. Frontend and Backend", h2_style))
     story.append(Paragraph(
-        "The application is structured into modular Python packages to ensure strict separation of concerns:",
+        "The frontend and application controller are implemented using Streamlit with custom CSS. The core interface is defined in <b>app.py</b>, "
+        "which encapsulates navigation, KPI metric cards, specimen drawers, and telemetry graphs. The modular edge engine resides in <b>src/classifier.py</b>, "
+        "remedies in <b>src/remedies.py</b>, and irrigation logic in <b>src/soil_advisor.py</b>.",
         body_style
     ))
-    mods = [
-        "<b>app.py:</b> The centralized presentation controller and interactive user interface built with Streamlit. Employs custom CSS variables, dark-mode glassmorphism cards, and interactive sliders.",
-        "<b>src/classifier.py:</b> The Edge AI inference wrapper. Encapsulates session initialization, thread pool tuning, tensor reshaping, and fault-tolerant prediction.",
-        "<b>src/remedies.py:</b> The agricultural pathology repository. Contains structured remediation schemas for all 38 classes, detailing organic cures, active chemical agents, and field hygiene.",
-        "<b>src/soil_advisor.py:</b> The closed-loop irrigation and microclimate rule engine. Evaluates volumetric moisture, temperature, humidity, and NPK nutrient balance.",
-        "<b>tests/test_pipeline.py:</b> Automated verification test suite executing unit tests across classifier loading, inference, remedy lookup, and irrigation logic."
-    ]
-    for m in mods:
-        story.append(Paragraph(f"• {m}", bullet_style))
 
-    story.append(Paragraph("<b>B. Live Cloud Deployment</b>", h2_style))
+    story.append(Paragraph("B. Edge AI Inference Engine", h2_style))
     story.append(Paragraph(
-        "The project is deployed in production on <b>Streamlit Community Cloud</b> and is globally accessible at "
-        "<u>https://agroedgeai.streamlit.app</u>. The complete source code, documentation, and continuous integration workflows are version-controlled "
-        "at <u>https://github.com/rishu295/AgroEdge-AI</u>. On every code push, GitHub Actions automatically instantiates a clean Ubuntu runner, "
-        "installs dependencies from requirements.txt, and executes test_pipeline.py to safeguard production reliability.",
+        "The application utilizes <i>onnxruntime.InferenceSession</i> with CPUExecutionProvider. Thread count is locked to 4 threads for deterministic "
+        "embedded execution. Preprocessing normalizes the input using standard ImageNet parameters, and numerically stable Softmax prevents numerical overflow.",
+        body_style
+    ))
+
+    story.append(Paragraph("C. Agronomic Prescription Engine", h2_style))
+    story.append(Paragraph(
+        "Recommendations are generated by a domain-specific agronomic knowledge base covering all 38 classes. It details target fungal/bacterial "
+        "pathogens, organic bio-fungicides (e.g., neem oil, Bacillus subtilis), chemical fungicides (e.g., Mancozeb, Chlorothalonil), and field hygiene.",
+        body_style
+    ))
+
+    story.append(Paragraph("D. Closed-Loop Irrigation Actuator", h2_style))
+    story.append(Paragraph(
+        "Automated irrigation logic operates via a closed-loop threshold controller. Volumetric soil moisture below 30% triggers the virtual solenoid valve "
+        "to OPEN (pumping water at 45 L/min). Moisture between 30% and 60% maintains STANDBY mode, conserving water.",
+        body_style
+    ))
+
+    story.append(Paragraph("E. Deployment", h2_style))
+    story.append(Paragraph(
+        "The application is deployed on Streamlit Community Cloud at <b>https://agroedgeai.streamlit.app</b>. Source code and CI/CD pipelines are "
+        "maintained at <b>https://github.com/rishu295/AgroEdge-AI</b>. The deployment requires only the lightweight repository and dependencies "
+        "listed in requirements.txt.",
         body_style
     ))
 
     # SECTION VIII: RESULTS AND EVALUATION
     story.append(Spacer(1, 4))
     story.append(Paragraph("VIII. Results and Evaluation", h1_style))
-    story.append(Paragraph("<b>A. Quantitative Performance Results</b>", h2_style))
-    
-    # Table IV: Quantitative Results
+    story.append(Paragraph("A. Evaluation Metrics", h2_style))
+    story.append(Paragraph(
+        "Models were evaluated using Top-1 Accuracy, Inference Latency (ms), Storage Size (MB), and Compression Ratio. Accuracy measures correct "
+        "pathology identifications on test data, while latency and storage determine real-world edge viability.",
+        body_style
+    ))
+
+    # Table IV
+    story.append(Paragraph("TABLE IV<br/>AgroEdge AI Performance Results", table_caption))
     t4_data = [
-        [Paragraph("Evaluation Parameter", th_style), Paragraph("Target Requirement", th_style), Paragraph("Recorded Result", th_style), Paragraph("Evaluation Verdict", th_style)],
-        [Paragraph("Top-1 Classification Accuracy", td_bold), Paragraph("> 95.0%", td_style), Paragraph("96.4% on PlantVillage", td_style), Paragraph("Met (High Reliability)", td_style)],
-        [Paragraph("CPU Inference Latency", td_bold), Paragraph("< 30 ms", td_style), Paragraph("18.2 ms (Intel/AMD x86)", td_style), Paragraph("Met (Real-Time Capable)", td_style)],
-        [Paragraph("Model Memory Footprint", td_bold), Paragraph("< 5.0 MB", td_style), Paragraph("2.56 MB (INT8 ONNX)", td_style), Paragraph("Met (75% Compression)", td_style)],
-        [Paragraph("Offline Resilience", td_bold), Paragraph("100% Offline Inference", td_style), Paragraph("0 Cloud API Calls Required", td_style), Paragraph("Met (Full Edge Autonomy)", td_style)],
-        [Paragraph("Irrigation Actuation Speed", td_bold), Paragraph("< 100 ms", td_style), Paragraph("< 2 ms (Local Rule Engine)", td_style), Paragraph("Met (Instant Closed-Loop)", td_style)]
+        [Paragraph("Evaluation Metric", th_style), Paragraph("Target Requirement", th_style), Paragraph("AgroEdge AI Recorded Result", th_style), Paragraph("Verdict", th_style)],
+        [Paragraph("Top-1 Classification Accuracy", td_bold), Paragraph("> 95.0%", td_center), Paragraph("96.4% on PlantVillage", td_center), Paragraph("Met (High Reliability)", td_center)],
+        [Paragraph("CPU Inference Latency", td_bold), Paragraph("< 30 ms", td_center), Paragraph("18.2 ms (Intel/AMD x86)", td_center), Paragraph("Met (Real-Time Capable)", td_center)],
+        [Paragraph("Model Memory Footprint", td_bold), Paragraph("< 5.0 MB", td_center), Paragraph("2.56 MB (INT8 ONNX)", td_center), Paragraph("Met (75% Compression)", td_center)],
+        [Paragraph("Offline Resilience", td_bold), Paragraph("100% Offline Inference", td_center), Paragraph("0 Cloud API Calls Required", td_center), Paragraph("Met (Full Edge Autonomy)", td_center)],
+        [Paragraph("Irrigation Actuation Speed", td_bold), Paragraph("< 100 ms", td_center), Paragraph("< 2 ms (Local Rule Engine)", td_center), Paragraph("Met (Instant Closed-Loop)", td_center)]
     ]
     t4 = Table(t4_data, colWidths=[140, 110, 124, 130])
     t4.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), PRIMARY),
-        ('BOX', (0,0), (-1,-1), 0.5, PRIMARY),
-        ('INNERGRID', (0,0), (-1,-1), 0.5, BORDER_COLOR),
-        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, GRAY_BG]),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-        ('LEFTPADDING', (0,0), (-1,-1), 5),
-        ('RIGHTPADDING', (0,0), (-1,-1), 5),
+        ('BOX', (0,0), (-1,-1), 0.5, colors.black),
+        ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#BBBBBB")),
+        ('LINEBELOW', (0,0), (-1,0), 1, colors.black),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
     ]))
     story.append(t4)
 
     story.append(Spacer(1, 4))
-    story.append(Paragraph("<b>B. Evaluation Discussion</b>", h2_style))
+    story.append(Paragraph("B. Results Discussion", h2_style))
     story.append(Paragraph(
-        "Quantization from FP32 to INT8 incurred an accuracy delta of only 0.7% (dropping from 97.1% to 96.4%), which is well within acceptable tolerance "
-        "for agricultural screening. In exchange, the model achieved a 3.6x reduction in inference latency (from 65 ms to 18 ms) and compressed storage "
-        "from 14.0 MB to 2.56 MB, proving the high efficacy of post-training quantization for edge deployment.",
+        "AgroEdge AI achieved a 96.4% top-1 accuracy across 38 classes while reducing latency from 65 ms to 18 ms and shrinking model size from 14.0 MB "
+        "to 2.56 MB. The 0.7% accuracy trade-off is minor compared to the substantial 3.6x speedup and 75% memory reduction achieved.",
         body_style
     ))
 
@@ -528,25 +608,25 @@ def build_academic_report(filename="AgroEdge_AI_Final_Project_Report.pdf"):
     story.append(Spacer(1, 4))
     story.append(Paragraph("IX. Comparison with Other Approaches", h1_style))
     
-    # Table V: Comparison
+    # Table V
+    story.append(Paragraph("TABLE V<br/>Comparison of Approaches", table_caption))
     t5_data = [
-        [Paragraph("Approach / Paradigm", th_style), Paragraph("Key Strengths", th_style), Paragraph("Architectural Limitations", th_style)],
-        [Paragraph("Manual Scouting", td_bold), Paragraph("Expert visual inspection & soil touch", td_style), Paragraph("Labor-intensive, slow, subjective, expensive", td_style)],
-        [Paragraph("Commercial Cloud AI APIs", td_bold), Paragraph("Massive server-side neural models", td_style), Paragraph("Fails completely without internet; high data cost", td_style)],
-        [Paragraph("Satellite Remote Sensing", td_bold), Paragraph("Large macro-acreage coverage", td_style), Paragraph("Low foliar resolution; cannot diagnose micro-lesions", td_style)],
+        [Paragraph("Approach", th_style), Paragraph("Strengths", th_style), Paragraph("Limitations", th_style)],
+        [Paragraph("Manual Scouting", td_bold), Paragraph("Direct expert physical inspection", td_style), Paragraph("Slow, labor-intensive, subjective, costly", td_style)],
+        [Paragraph("Cloud-Based AI APIs", td_bold), Paragraph("Massive server-side deep learning models", td_style), Paragraph("Fails without internet; recurring cellular data fees", td_style)],
+        [Paragraph("Satellite Remote Sensing", td_bold), Paragraph("Broad macro-level regional monitoring", td_style), Paragraph("Low foliar resolution; cannot detect micro-lesions", td_style)],
         [Paragraph("Uncompressed Edge CNNs", td_bold), Paragraph("High raw classification accuracy", td_style), Paragraph("Large file sizes (>100MB), drains battery, high heat", td_style)],
         [Paragraph("AgroEdge AI (Ours)", td_bold), Paragraph("Sub-20ms offline inference, 2.56MB size", td_style), Paragraph("Requires clear top-down leaf imagery framing", td_style)]
     ]
     t5 = Table(t5_data, colWidths=[120, 184, 200])
     t5.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), PRIMARY),
-        ('BOX', (0,0), (-1,-1), 0.5, PRIMARY),
-        ('INNERGRID', (0,0), (-1,-1), 0.5, BORDER_COLOR),
-        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, GRAY_BG]),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-        ('LEFTPADDING', (0,0), (-1,-1), 5),
-        ('RIGHTPADDING', (0,0), (-1,-1), 5),
+        ('BOX', (0,0), (-1,-1), 0.5, colors.black),
+        ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#BBBBBB")),
+        ('LINEBELOW', (0,0), (-1,0), 1, colors.black),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
     ]))
     story.append(t5)
 
@@ -554,9 +634,9 @@ def build_academic_report(filename="AgroEdge_AI_Final_Project_Report.pdf"):
     story.append(Spacer(1, 4))
     story.append(Paragraph("X. Individual Contribution", h1_style))
     story.append(Paragraph(
-        "As the lead developer, the project responsibilities included problem formulation, PlantVillage dataset preprocessing, "
-        "INT8 post-training quantization, ONNX Runtime integration, agronomic treatment knowledge base engineering, closed-loop soil moisture "
-        "logic development, custom Streamlit dark SaaS frontend architecture, automated GitHub Actions CI/CD test authoring, and public cloud deployment.",
+        "The project work covered problem definition, PlantVillage dataset curation, MobileNet transfer learning, INT8 Post-Training Quantization, "
+        "ONNX Runtime optimization, agronomic prescription engine design, closed-loop soil moisture logic, Streamlit web development, "
+        "GitHub Actions CI/CD configuration, deployment on Streamlit Community Cloud, and academic report compilation.",
         body_style
     ))
 
@@ -564,11 +644,11 @@ def build_academic_report(filename="AgroEdge_AI_Final_Project_Report.pdf"):
     story.append(Spacer(1, 4))
     story.append(Paragraph("XI. Limitations", h1_style))
     lims = [
-        "<b>Laboratory Background Bias:</b> A portion of PlantVillage images were captured against uniform laboratory backgrounds, which may slightly reduce field accuracy under heavy background soil or weed clutter.",
-        "<b>Single-Leaf Imaging Constraint:</b> The classification model evaluates individual leaves rather than full-canopy aerial drone panoramas.",
-        "<b>Lack of Calibrated Confidence Intervals:</b> The model provides point-estimate softmax probabilities rather than Bayesian uncertainty bounds.",
-        "<b>Microclimate Threshold Generalization:</b> Soil moisture thresholds (30%–60%) represent general loamy field capacity and may require calibration for sandy or heavy clay soil types.",
-        "<b>Static Agronomic Knowledge Base:</b> Remedies are derived from curated agricultural extension literature and do not adapt automatically to newly emerging pesticide-resistant strains."
+        "Laboratory background bias: PlantVillage images were captured under controlled conditions, which may slightly reduce accuracy under complex field backgrounds.",
+        "Single-leaf constraint: The classification model evaluates individual leaves rather than full-canopy aerial imagery.",
+        "Lack of calibrated confidence intervals: Predictions provide softmax point estimates rather than Bayesian uncertainty distributions.",
+        "Soil moisture threshold generalization: Standard 30%–60% field capacity thresholds may require regional tuning for sandy or heavy clay soils.",
+        "Heuristic recommendations: Agronomic prescriptions are rule-based and have not been dynamically adjusted for newly evolving resistant pathogen strains."
     ]
     for l in lims:
         story.append(Paragraph(f"• {l}", bullet_style))
@@ -577,10 +657,10 @@ def build_academic_report(filename="AgroEdge_AI_Final_Project_Report.pdf"):
     story.append(Spacer(1, 4))
     story.append(Paragraph("XII. Future Scope", h1_style))
     futs = [
-        "<b>YOLOv11-Nano Object Detection:</b> Upgrade from whole-image classification to multi-leaf bounding box detection and lesion segmentation directly in field video feeds.",
-        "<b>Physical IoT Hardware Deployment:</b> Flash the ONNX/TFLite model directly onto a Raspberry Pi 5 or ESP32-CAM wired to physical capacitive soil moisture probes and 12V solenoid relays.",
-        "<b>LoRaWAN Mesh Networking:</b> Integrate long-range (10 km) low-power radio communication allowing distributed field sensor nodes to communicate without cellular data.",
-        "<b>Generative Multilingual Voice Assistant:</b> Provide speech-based local language audio diagnoses for non-literate smallholder farmers."
+        "Integrate YOLOv11-Nano object detection for multi-leaf bounding box detection and lesion segmentation in live video feeds.",
+        "Deploy the INT8 ONNX model onto physical Raspberry Pi 5 and ESP32-CAM hardware with physical 12V solenoid relay valves.",
+        "Integrate LoRaWAN mesh networking for long-range (10 km) sensor telemetry communication without cellular infrastructure.",
+        "Develop multilingual voice advisory features for non-literate smallholder farmers in regional languages."
     ]
     for f in futs:
         story.append(Paragraph(f"• {f}", bullet_style))
@@ -589,11 +669,11 @@ def build_academic_report(filename="AgroEdge_AI_Final_Project_Report.pdf"):
     story.append(Spacer(1, 4))
     story.append(Paragraph("XIII. Conclusion", h1_style))
     story.append(Paragraph(
-        "AgroEdge AI successfully demonstrates a practical, production-ready edge computing framework for modern precision agriculture. "
-        "By fine-tuning MobileNet on the PlantVillage dataset and compressing weights via 8-bit Post-Training Quantization into an ONNX graph, "
-        "the system achieves a 75% storage reduction (2.56 MB) and an ultra-fast 18 ms CPU inference latency while retaining 96.4% diagnostic accuracy across "
-        "38 plant disease classes. Integrated with a closed-loop soil irrigation actuator, scientific prescription guidance, and an interactive dark SaaS web platform, "
-        "AgroEdge AI proves that cutting-edge artificial intelligence can function autonomously in disconnected rural environments to safeguard global crop yields.",
+        "AgroEdge AI demonstrates an end-to-end implementation of Edge AI for automated foliar pathology and smart precision irrigation. "
+        "Using a fine-tuned MobileNet architecture compressed via INT8 Post-Training Quantization into an ONNX graph, the system achieves a 2.56 MB "
+        "footprint (75% compression) and an ultra-fast 18 ms inference latency while retaining 96.4% diagnostic accuracy across 38 classes. "
+        "Coupled with evidence-based agronomic treatment guidelines, an autonomous closed-loop irrigation actuator, and a responsive web application "
+        "deployed online, AgroEdge AI proves that modern deep learning can operate reliably and offline to support global agricultural resilience.",
         body_style
     ))
 
@@ -604,15 +684,15 @@ def build_academic_report(filename="AgroEdge_AI_Final_Project_Report.pdf"):
         "[1] S. P. Mohanty, D. P. Hughes, and M. Salathé, “Using deep learning for image-based plant disease detection,” <i>Frontiers in Plant Science</i>, vol. 7, p. 1419, 2016.",
         "[2] M. Sandler, A. Howard, M. Zhu, A. Zhmoginov, and L.-C. Chen, “MobileNetV2: Inverted residuals and linear bottlenecks,” in <i>Proc. IEEE Conf. Computer Vision and Pattern Recognition (CVPR)</i>, 2018, pp. 4510–4520.",
         "[3] B. Jacob et al., “Quantization and training of neural networks for efficient integer-arithmetic-only inference,” in <i>Proc. IEEE Conf. Computer Vision and Pattern Recognition (CVPR)</i>, 2018, pp. 2704–2713.",
-        "[4] Microsoft Corporation, “ONNX Runtime: Cross-platform, high performance ML inferencing and training accelerator,” [Online]. Available: https://onnxruntime.ai/",
-        "[5] Food and Agriculture Organization of the United Nations (FAO), “The state of food and agriculture: Moving forward on food loss and waste reduction,” Rome, 2019.",
+        "[4] Microsoft Corporation, “ONNX Runtime: Cross-platform, high performance ML inferencing accelerator,” [Online]. Available: https://onnxruntime.ai/",
+        "[5] Food and Agriculture Organization of the United Nations (FAO), “The state of food and agriculture,” Rome, Italy, 2019.",
         "[6] Streamlit Documentation, “Build and share data apps,” [Online]. Available: https://docs.streamlit.io/"
     ]
     for r in refs:
         story.append(Paragraph(r, bullet_style))
 
-    doc.build(story, canvasmaker=AcademicNumberedCanvas)
-    print(f"Academic Report PDF successfully generated: {filename}")
+    doc.build(story, canvasmaker=IEEENumberedCanvas)
+    print(f"IEEE Academic Report PDF successfully generated: {filename}")
 
 if __name__ == "__main__":
     build_academic_report()
