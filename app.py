@@ -24,7 +24,7 @@ from src.soil_advisor import evaluate_soil_and_irrigation
 # App Configuration & Metadata
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="AcrePulse | Autonomous Agronomy Platform",
+    page_title="AgroEdge AI | Autonomous Agronomy Platform",
     page_icon="🌱",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -267,10 +267,10 @@ classifier = get_classifier()
 st.markdown("""
 <div class="top-nav">
     <div class="brand-group">
-        <div class="brand-logo">🌱</div>
+        <div class="brand-logo">🌿</div>
         <div>
-            <h1 class="brand-title">AcrePulse</h1>
-            <p class="brand-tag">Precision Agronomy & Foliar Pathology</p>
+            <h1 class="brand-title">AgroEdge AI</h1>
+            <p class="brand-tag">Autonomous Precision Agronomy & Foliar Pathology</p>
         </div>
     </div>
     <div class="nav-status-group">
@@ -598,6 +598,6 @@ with tab_station:
 st.write("")
 st.markdown("""
 <div style="text-align:center; padding:20px; color:#6B7280; font-size:12px; border-top:1px solid rgba(255,255,255,0.06); margin-top:30px;">
-    <strong>AcrePulse</strong> • Enterprise Autonomous Agronomy & Foliar Diagnostics Platform • Powered by ONNX Runtime Engine
+    <strong>AgroEdge AI</strong> • Enterprise Autonomous Agronomy & Foliar Diagnostics Platform • Powered by ONNX Runtime Engine
 </div>
 """, unsafe_allow_html=True)

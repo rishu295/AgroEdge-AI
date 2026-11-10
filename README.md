@@ -1,4 +1,4 @@
-# 🌱 AcrePulse: Autonomous Agronomy & Foliar Pathology Platform
+# 🌿 AgroEdge AI: Autonomous Agronomy & Foliar Pathology Platform
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/)
@@ -12,7 +12,7 @@
 
 ## 🚀 Live Demo
 You can access the live application on any mobile device or browser:  
-👉 **[Launch AcrePulse Platform](https://share.streamlit.io)** *(Replace with your deployed Streamlit URL)*
+👉 **[Launch AgroEdge AI Platform](https://share.streamlit.io)** *(Replace with your deployed Streamlit URL)*
 
 ---
 
@@ -64,7 +64,7 @@ flowchart TD
 | Model Variant | Precision | File Size | Inference Latency (CPU) | Accuracy (PlantVillage) |
 | :--- | :--- | :--- | :--- | :--- |
 | Baseline MobileNetV2 | FP32 (Full) | ~14.0 MB | ~65 ms | 97.1% |
-| **AcrePulse (Ours)** | **INT8 (Quantized ONNX)** | **2.56 MB (-75%)** | **~18 ms (3.5x faster)** | **96.4%** |
+| **AgroEdge AI (Ours)** | **INT8 (Quantized ONNX)** | **2.56 MB (-75%)** | **~18 ms (3.5x faster)** | **96.4%** |
 
 ---
 
@@ -104,7 +104,7 @@ Open `http://localhost:8501` in your browser.
    - **Repository:** `<your-username>/Smart-Agriculture-Edge-AI`
    - **Branch:** `main`
    - **Main file path:** `app.py`
-4. Click **Deploy!** Within 2 minutes, you will receive a permanent HTTPS public URL (e.g. `https://acrepulse.streamlit.app`).
+4. Click **Deploy!** Within 2 minutes, you will receive a permanent HTTPS public URL (e.g. `https://agroedge-ai.streamlit.app`).
 
 ---
 
