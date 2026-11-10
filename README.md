@@ -1,7 +1,7 @@
 # 🌿 AgroEdge AI: Autonomous Agronomy & Foliar Pathology Platform
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://agroedgeai.streamlit.app)
 [![ONNX Runtime](https://img.shields.io/badge/Inference-ONNX%20Runtime%20INT8-green.svg)](https://onnxruntime.ai/)
 [![Model Footprint](https://img.shields.io/badge/Model%20Size-2.56%20MB-brightgreen.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -12,7 +12,7 @@
 
 ## 🚀 Live Demo
 You can access the live application on any mobile device or browser:  
-👉 **[Launch AgroEdge AI Platform](https://share.streamlit.io)** *(Replace with your deployed Streamlit URL)*
+👉 **[Launch AgroEdge AI Live Platform](https://agroedgeai.streamlit.app)**
 
 ---
 
