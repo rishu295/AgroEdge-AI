@@ -73,3 +73,4 @@ def evaluate_soil_and_irrigation(soil_moisture: float, temperature: float, humid
         "disease_risk_alert": disease_risk_alert,
         "npk_advisory": npk_status
     }
+

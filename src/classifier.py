@@ -134,3 +134,4 @@ class EdgePlantClassifier:
             "top_3": top_3,
             "device": "Local CPU (Edge Runtime)"
         }
+

@@ -181,3 +181,4 @@ def get_remedy(disease_name: str) -> dict:
     fallback = DEFAULT_DISEASE_REMEDY.copy()
     fallback["crop"] = disease_name.split()[0] if disease_name else "Crop"
     return fallback
+
