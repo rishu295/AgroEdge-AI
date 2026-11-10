@@ -51,16 +51,16 @@ class IEEETwoColCanvas(canvas.Canvas):
         self.drawString(45, 30, "Lovely Professional University | School of Computing and Artificial Intelligence")
         self.drawRightString(567, 30, f"Page {self._pageNumber} of {total_pages}")
 
-        # Vertical Partition Line between Two Columns
+        # Very Light Vertical Partition Line between Two Columns (Starting from First Page)
         # Column 1 right edge = 45 + 250 = 295, Column 2 left edge = 317. Center = 306
-        self.setStrokeColor(colors.HexColor("#888888"))
+        self.setStrokeColor(colors.HexColor("#D1D5DB")) # Very light clean gray divider
         self.setLineWidth(0.5)
         if self._pageNumber == 1:
-            # First page has banner on top, divider starts lower (e.g. y=430 down to y=50)
-            self.line(306, 50, 306, 460)
+            # Starts right under the Abstract/Keywords on Page 1!
+            self.line(306, 45, 306, 470)
         else:
-            # Later pages: full height divider line
-            self.line(306, 50, 306, 735)
+            # Full height on subsequent pages
+            self.line(306, 45, 306, 740)
 
         self.restoreState()
 
@@ -410,3 +410,4 @@ def build_ieee_pdf(filename="AgroEdge_AI_IEEE_Report.pdf"):
 
 if __name__ == "__main__":
     build_ieee_pdf()
+
