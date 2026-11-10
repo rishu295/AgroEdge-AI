@@ -20,10 +20,11 @@ ENV/
 .vscode/
 .idea/
 
-# OS files
+# OS & Office lock files
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 .DS_Store
+~$*
 
