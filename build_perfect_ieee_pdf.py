@@ -16,7 +16,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import (
-    BaseDocTemplate, PageTemplate, Frame, Paragraph, Spacer, Table, TableStyle, FrameBreak, Image
+    BaseDocTemplate, PageTemplate, Frame, Paragraph, Spacer, Table, TableStyle, FrameBreak, Image, NextPageTemplate
 )
 from reportlab.pdfgen import canvas
 
@@ -123,6 +123,7 @@ def build_pdf(filename="AgroEdge_AI_Final_Report.pdf"):
     ref_s = ParagraphStyle('REF', fontName='Times-Roman', fontSize=7.5, leading=9.5, alignment=4, leftIndent=12, firstLineIndent=-12, spaceBefore=0, spaceAfter=2)
 
     story = []
+    story.append(NextPageTemplate('Page2'))
 
     # =========================================================================
     # FRAME 1: TOP BANNER (Title + Author details)
@@ -201,8 +202,6 @@ def build_pdf(filename="AgroEdge_AI_Final_Report.pdf"):
         body_s
     ))
 
-    # BREAK DIRECTLY TO RIGHT COLUMN OF PAGE 1!
-    story.append(FrameBreak())
 
     # =========================================================================
     # FRAME 3: RIGHT COLUMN OF PAGE 1 (STARTS WITH D. OBJECTIVES!)
@@ -606,3 +605,4 @@ def build_pdf(filename="AgroEdge_AI_Final_Report.pdf"):
 if __name__ == "__main__":
     build_pdf("AgroEdge_AI_Final_Report.pdf")
     build_pdf("AgroEdge_AI_Official_IEEE_Report.pdf")
+

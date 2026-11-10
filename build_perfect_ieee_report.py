@@ -324,12 +324,6 @@ def generate_report(output_path="AgroEdge_AI_Final_Report.docx"):
         "closed-loop soil irrigation actuation directly at the field boundary."
     )
 
-    # COLUMN BREAK: FORCES D. OBJECTIVES TO THE TOP OF RIGHT COLUMN / SCREEN 2!
-    p_cb = doc.add_paragraph()
-    p_cb.paragraph_format.space_before = Pt(0)
-    p_cb.paragraph_format.space_after = Pt(0)
-    r_cb = p_cb.add_run()
-    r_cb.add_break(WD_BREAK.COLUMN)
 
     # =========================================================================
     # PAGE 1 - RIGHT COLUMN (STARTS WITH D. OBJECTIVES!)
@@ -801,5 +795,9 @@ def generate_report(output_path="AgroEdge_AI_Final_Report.docx"):
     print(f"Report successfully saved to {output_path}!")
 
 if __name__ == "__main__":
-    generate_report("AgroEdge_AI_Final_Report.docx")
-    generate_report("AgroEdge_AI_Official_IEEE_Report.docx")
+    for path in ["AgroEdge_AI_Final_Report.docx", "AgroEdge_AI_Complete_Report.docx", "AgroEdge_AI_Official_IEEE_Report.docx", "AgroEdge_AI_IEEE_Report.docx"]:
+        try:
+            generate_report(path)
+        except PermissionError:
+            print(f"Skipping {path} (currently open in Microsoft Word).")
+
